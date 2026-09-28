@@ -1,6 +1,8 @@
 #include "minemu/boot.h"
 #include "minemu/trap.h"
 #include "minemu/trace.h"
+#include "minemu/uart.h"
+#include "minemu/kprintf.h"
 
 void minemu_kernel_main(const struct minemu_boot_info *boot_info) {
     if ((uintptr_t)boot_info != MINEMU_BOOT_INFO_VADDR ||
@@ -14,6 +16,9 @@ void minemu_kernel_main(const struct minemu_boot_info *boot_info) {
         minemu_trace_event(UINT32_C(0xb007bad0));
         minemu_fail_stop();
     }
-    minemu_trace_event(1);
+    uart_init(UART_CONSOLE);
+    uart_puts(UART_CONSOLE, "hello world\n");
+    ///kprintf("kernel main at %p\n", (void *)minemu_kernel_main);
+    ///kprintf("dec=%d neg=%d hex=%08x str=%s ch=%c pct=%%\n", 42, -7, 0xbeef, "ok", 'Z');   
     minemu_fail_stop();
 }
