@@ -15,4 +15,19 @@ static inline void minemu_irq_disable(void) {
     __asm__ volatile("cpsid i" : : : "memory");
 }
 
+typedef void (*irq_handler_t)(void);
+void irq_register(uint32_t id, irq_handler_t fn);
+void irq_init(void);
+
+static inline uint32_t irq_save(void) {
+    uint32_t cpsr;
+    __asm__ volatile("mrs %0, cpsr" : "=r"(cpsr));
+    minemu_irq_disable();
+    return cpsr & (1u << 7);
+}
+
+static inline void irq_restore(uint32_t saved) {
+    if (!saved) minemu_irq_enable();
+}
+
 #endif

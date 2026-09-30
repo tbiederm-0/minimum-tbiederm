@@ -3,6 +3,8 @@
 #include "minemu/trace.h"
 #include "minemu/uart.h"
 #include "minemu/kprintf.h"
+#include "minemu/irq.h"
+#include <minemu/msh.h>
 
 void minemu_kernel_main(const struct minemu_boot_info *boot_info) {
     if ((uintptr_t)boot_info != MINEMU_BOOT_INFO_VADDR ||
@@ -18,7 +20,11 @@ void minemu_kernel_main(const struct minemu_boot_info *boot_info) {
     }
     uart_init(UART_CONSOLE);
     uart_puts(UART_CONSOLE, "hello world\n");
-    ///kprintf("kernel main at %p\n", (void *)minemu_kernel_main);
-    ///kprintf("dec=%d neg=%d hex=%08x str=%s ch=%c pct=%%\n", 42, -7, 0xbeef, "ok", 'Z');   
-    minemu_fail_stop();
+
+    irq_init();
+    UART_CONSOLE->control |= MINEMU_UART_CONTROL_RX_IRQ_ENABLE;
+    MINEMU_INTERRUPT->enable |= (UINT32_C(1) << MINEMU_IRQ_UART0);
+    minemu_irq_enable();
+
+    msh_run();
 }
