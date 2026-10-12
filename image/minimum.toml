@@ -1,5 +1,6 @@
 kernel = "../kernel/build/minimum-kernel.elf"
 
-[[modules]]
-name = "minimum-user"
-elf = "../user/prog/minimum-user/build/minimum-user.elf"
+# The shell image ships no user module, so the kernel falls through to msh.
+# User-mode fixtures (HW2/HW3) build their own image.toml that adds a
+# "minimum-user" module; only those images enter user space.
+# See kernel/src/core/main.c.

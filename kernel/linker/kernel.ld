@@ -56,6 +56,21 @@ SECTIONS
     __minemu_und_stack_top = .;
   } :kernel
 
+  /*
+   * Scratch space for the user-mode loader (system-ROM shadow tables, the user
+   * page table, staged user image pages, and the user stack). This section is
+   * deliberately left out of every PHDR: the boot ROM only copies and zeroes
+   * the PT_LOAD segments, so these ~88 KiB are not touched during boot. That
+   * keeps the HW1 shell image inside its tight tick budget. The loader zeroes
+   * every buffer itself before use, so no zero-initialisation is required.
+   */
+  . = ALIGN(4096);
+  .user_scratch (NOLOAD) :
+  {
+    *(.user_scratch)
+    *(.user_scratch.*)
+  }
+
   __minemu_svc_stack_top_paddr = __minemu_svc_stack_top - 0x80000000;
   __minemu_irq_stack_top_paddr = __minemu_irq_stack_top - 0x80000000;
   __minemu_abt_stack_top_paddr = __minemu_abt_stack_top - 0x80000000;

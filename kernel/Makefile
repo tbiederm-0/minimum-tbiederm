@@ -12,6 +12,8 @@ CORE_OBJECTS := \
 RUNTIME_OBJECTS := \
     $(BUILD)/runtime/irq.o \
     $(BUILD)/startup/irq_trampoline.o \
+    $(BUILD)/startup/svc_trampoline.o \
+    $(BUILD)/startup/enter_user.o \
     $(BUILD)/runtime/block.o \
     $(BUILD)/runtime/exception.o \
     $(BUILD)/runtime/memory.o \
@@ -51,6 +53,7 @@ LDFLAGS := $(ARCH_FLAGS) \
     -Wl,--gc-sections \
     -Wl,-u,minemu_bootstrap \
     -Wl,-u,minemu_irq_trampoline \
+    -Wl,-u,minemu_svc_trampoline \
     -Wl,-Map,$(BUILD)/minimum-kernel.map
 
 LIBGCC := $(shell $(CC) $(ARCH_FLAGS) -print-libgcc-file-name)
