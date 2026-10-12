@@ -384,10 +384,11 @@ void minemu_kernel_main(const struct minemu_boot_info *boot_info) {
         minemu_fail_stop();
     }
 
-    /* Enter user mode only when the image actually ships a "minimum-user"
-     * module. The shell image (image/minimum.toml) has no module and falls
-     * through to msh; user-mode fixture images (HW2/HW3) add one and enter
-     * user space. Never guess from the module's instructions. */
+    /* Enter user mode whenever the image ships a "minimum-user" module. The
+     * HW2 shell image (image/minimum.toml) ships msh this way, and user-mode
+     * fixture images (HW2/HW3) declare their own. Images without a module,
+     * such as the HW1 shell image, fall through to the built-in msh below.
+     * Never guess from the module's instructions. */
     static const char module_name[] = USER_MODULE_NAME;
     if (boot_info->module_count != 0 && map_system_rom(boot_info)) {
         const struct minemu_module_record *module =
