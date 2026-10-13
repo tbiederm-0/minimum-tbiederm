@@ -384,6 +384,13 @@ void minemu_kernel_main(const struct minemu_boot_info *boot_info) {
         minemu_fail_stop();
     }
 
+    /* HW1 Task 1 banner. The kernel always greets on UART0 before selecting a
+     * shell so HW1's hello-world image still passes. uart_init() leaves the RX
+     * interrupt disabled, so a user-mode shell below can still poll the FIFO
+     * through the ioctl interface without the kernel stealing its input. */
+    uart_init(UART_CONSOLE);
+    uart_puts(UART_CONSOLE, "hello world\n");
+
     /* Enter user mode whenever the image ships a "minimum-user" module. The
      * HW2 shell image (image/minimum.toml) ships msh this way, and user-mode
      * fixture images (HW2/HW3) declare their own. Images without a module,
@@ -400,9 +407,6 @@ void minemu_kernel_main(const struct minemu_boot_info *boot_info) {
     }
 
     /* Fallback: HW1 kernel shell. */
-    uart_init(UART_CONSOLE);
-    uart_puts(UART_CONSOLE, "hello world\n");
-
     irq_init();
     UART_CONSOLE->control |= MINEMU_UART_CONTROL_RX_IRQ_ENABLE;
     MINEMU_INTERRUPT->enable |= (UINT32_C(1) << MINEMU_IRQ_UART0);
